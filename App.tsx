@@ -78,7 +78,7 @@ const App: React.FC = () => {
                 <p>
                   ✨ To create this kind of Ramayana post with images visit{' '}
                   <a 
-                    href="http://www.annapoornainfo.com/ramayana" 
+                    href="https://www.annapoornainfo.com/ramayana" 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="text-amber-700 hover:underline font-semibold"

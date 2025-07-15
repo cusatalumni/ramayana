@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
@@ -19,6 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     try {
         // Step 1: Define schema and generate Sloka and Image Prompt
+        console.log("Step 1: Generating sloka and visual prompt...");
         const slokaAndPromptSchema = {
             type: Type.OBJECT,
             properties: {
@@ -33,19 +33,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         
         const slokaResponse = await ai.models.generateContent({
             model: "gemini-2.5-flash",
-            contents: "Generate an original four-line sloka from the epic Ramayana. Provide the sloka in Sanskrit (Devanagari script), its transliteration in Malayalam script, its meaning in Malayalam, and its meaning in English. Also create a visual prompt for an AI image generator to illustrate this sloka's theme. Return only the JSON object.",
+            contents: "Generate an original four-line sloka from the Ramayana, along with its translations and a visual prompt.",
             config: {
+                systemInstruction: "You are an expert on the Ramayana. Your task is to generate a four-line Sanskrit sloka, provide its Malayalam transliteration and meaning, its English meaning, and a creative visual prompt for an image generator. You must respond strictly in the provided JSON schema format.",
                 responseMimeType: "application/json",
                 responseSchema: slokaAndPromptSchema,
             },
         });
 
-        const slokaData = JSON.parse(slokaResponse.text);
+        let slokaData;
+        try {
+            slokaData = JSON.parse(slokaResponse.text);
+        } catch (e) {
+            console.error("Failed to parse JSON from sloka generation:", slokaResponse.text);
+            throw new Error("The model did not return valid JSON for the sloka data.");
+        }
+        console.log("Step 1 SUCCESS. Visual prompt received.");
+
 
         // Step 2: Generate Image from Prompt
+        console.log("Step 2: Generating image...");
         const imageResponse = await ai.models.generateImages({
             model: 'imagen-3.0-generate-002',
-            prompt: `${slokaData.visual_prompt}, 8k, high detail, cinematic lighting, epic`,
+            prompt: `cinematic photo, epic, high detail of: ${slokaData.visual_prompt}`,
             config: {
                 numberOfImages: 1,
                 outputMimeType: 'image/jpeg',
@@ -53,12 +63,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             },
         });
 
-        if (!imageResponse.generatedImages || imageResponse.generatedImages.length === 0) {
+        if (!imageResponse.generatedImages?.[0]?.image?.imageBytes) {
             throw new Error("Image generation failed or produced no images.");
         }
-
         const base64ImageBytes: string = imageResponse.generatedImages[0].image.imageBytes;
         const rawImageUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
+        console.log("Step 2 SUCCESS. Image generated.");
         
         // Step 3: Combine and send the response to the client
         const postData = {
@@ -72,8 +82,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(200).json(postData);
 
     } catch (error) {
-        console.error("Error in /api/generate:", error);
+        console.error("Full error in /api/generate:", error);
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
-        res.status(500).json({ error: { message: `An error occurred while generating the post: ${errorMessage}` } });
+        res.status(500).json({ error: { message: `An error occurred during post generation: ${errorMessage}` } });
     }
 }

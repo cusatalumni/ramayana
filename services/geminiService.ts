@@ -1,5 +1,5 @@
 
-async function addWatermark(imageUrl: string, watermarkText: string): Promise<string> {
+export async function addWatermark(imageUrl: string, watermarkText: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -15,15 +15,19 @@ async function addWatermark(imageUrl: string, watermarkText: string): Promise<st
 
       ctx.drawImage(img, 0, 0);
 
-      const fontSize = Math.max(24, Math.floor(canvas.width / 25));
-      ctx.font = `bold ${fontSize}px Lora, serif`;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-      ctx.shadowBlur = 5;
+      // Enhanced watermark style for better visibility
+      const fontSize = Math.max(24, Math.floor(canvas.width / 30));
+      ctx.font = `700 ${fontSize}px Lora, serif`; // Bolder font
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // Slightly less transparent
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.7)'; // Stronger shadow
+      ctx.shadowBlur = 8;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      ctx.fillText(watermarkText, canvas.width / 2, canvas.height / 2);
+      // Rotate the watermark for a more professional look
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(-0.349); // ~20 degrees rotation
+      ctx.fillText(watermarkText, 0, 0);
       
       resolve(canvas.toDataURL('image/jpeg'));
     };
@@ -33,31 +37,4 @@ async function addWatermark(imageUrl: string, watermarkText: string): Promise<st
     };
     img.src = imageUrl;
   });
-}
-
-export async function generateRamayanaPost(): Promise<{ sanskrit_sloka: string; malayalam_transliteration: string; malayalam_meaning: string; english_meaning: string; imageUrl: string; }> {
-  // Call our new serverless API endpoint instead of using the Gemini SDK on the client
-  const response = await fetch('/api/generate', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ error: { message: "An unknown server error occurred." }}));
-    throw new Error(errorData.error?.message || `Request failed with status ${response.status}`);
-  }
-
-  const data = await response.json();
-  const { sanskrit_sloka, malayalam_transliteration, malayalam_meaning, english_meaning, rawImageUrl } = data;
-  
-  // The watermarking is still done on the client-side for performance
-  const imageUrl = await addWatermark(rawImageUrl, "www.annapoornainfo.com");
-  
-  if (!sanskrit_sloka || !malayalam_transliteration || !malayalam_meaning || !english_meaning || !imageUrl) {
-    throw new Error("Failed to generate complete post data from the server response.");
-  }
-
-  return { sanskrit_sloka, malayalam_transliteration, malayalam_meaning, english_meaning, imageUrl };
 }

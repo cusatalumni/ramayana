@@ -1,0 +1,71 @@
+
+import React, { useState } from 'react';
+import { CopyIcon, DownloadIcon } from './icons';
+
+interface ActionButtonsProps {
+  sanskrit_sloka: string;
+  malayalam_transliteration: string;
+  malayalam_meaning: string;
+  english_meaning: string;
+  imageUrl: string;
+}
+
+const ActionButtons: React.FC<ActionButtonsProps> = ({ sanskrit_sloka, malayalam_transliteration, malayalam_meaning, english_meaning, imageUrl }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    const textToCopy = `
+Sloka (Sanskrit):
+${sanskrit_sloka}
+
+Transliteration (Malayalam):
+${malayalam_transliteration}
+
+Malayalam Meaning:
+${malayalam_meaning}
+
+English Meaning:
+“${english_meaning}”
+
+— The Ramayana
+    `;
+    try {
+      await navigator.clipboard.writeText(textToCopy.trim());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+      alert('Failed to copy sloka.');
+    }
+  };
+
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = 'ramayana_post.jpeg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+      <button
+        onClick={handleCopy}
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-stone-700 text-white font-bold py-2 px-6 rounded-full shadow-md hover:bg-stone-800 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-500"
+      >
+        <CopyIcon />
+        {copied ? 'Copied!' : 'Copy Sloka'}
+      </button>
+      <button
+        onClick={handleDownload}
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-600 text-white font-bold py-2 px-6 rounded-full shadow-md hover:bg-amber-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+      >
+        <DownloadIcon />
+        Download Image
+      </button>
+    </div>
+  );
+};
+
+export default ActionButtons;

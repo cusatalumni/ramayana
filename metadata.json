@@ -1,0 +1,6 @@
+{
+  "name": "Ramayana Daily Post Generator",
+  "description": "An application that generates a daily inspirational quote from the Ramayana and creates a relevant, beautiful image to accompany it, ready for sharing on social media.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

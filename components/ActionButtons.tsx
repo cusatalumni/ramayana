@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { CopyIcon, DownloadIcon } from './icons';
 import { DisplayablePost } from '../types';
 
-const ActionButtons: React.FC<DisplayablePost> = ({ sanskrit_sloka, malayalam_transliteration, malayalam_meaning, english_meaning, imageUrl }) => {
+const ActionButtons: React.FC<DisplayablePost> = ({ sanskrit_sloka, malayalam_transliteration, malayalam_meaning, english_meaning, imageUrl, imageRequested }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -51,14 +50,16 @@ English Meaning:
         <CopyIcon />
         {copied ? 'Copied!' : 'Copy Sloka'}
       </button>
-      <button
-        onClick={handleDownload}
-        disabled={!imageUrl}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-600 text-white font-bold py-2 px-6 rounded-full shadow-md hover:bg-amber-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:bg-amber-400 disabled:cursor-not-allowed"
-      >
-        <DownloadIcon />
-        Download Image
-      </button>
+      {imageRequested && (
+        <button
+          onClick={handleDownload}
+          disabled={!imageUrl}
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-600 text-white font-bold py-2 px-6 rounded-full shadow-md hover:bg-amber-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:bg-amber-400 disabled:cursor-not-allowed"
+        >
+          <DownloadIcon />
+          Download Image
+        </button>
+      )}
     </div>
   );
 };

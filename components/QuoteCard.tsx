@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { DisplayablePost } from '../types';
 
@@ -11,22 +10,24 @@ const ImageLoader: React.FC = () => (
 );
 
 
-const QuoteCard: React.FC<DisplayablePost> = ({ sanskrit_sloka, malayalam_transliteration, malayalam_meaning, english_meaning, imageUrl }) => {
+const QuoteCard: React.FC<DisplayablePost> = ({ sanskrit_sloka, malayalam_transliteration, malayalam_meaning, english_meaning, imageUrl, imageRequested }) => {
   return (
     <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden p-6 border border-amber-200">
-      <div className="w-full object-cover rounded-lg aspect-square overflow-hidden">
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt="AI generated image related to the sloka"
-            className="w-full h-full object-cover animate-fade-in"
-          />
-        ) : (
-          <ImageLoader />
-        )}
-      </div>
+      {imageRequested && (
+        <div className="w-full object-cover rounded-lg aspect-square overflow-hidden mb-6">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt="AI generated image related to the sloka"
+              className="w-full h-full object-cover animate-fade-in"
+            />
+          ) : (
+            <ImageLoader />
+          )}
+        </div>
+      )}
 
-      <blockquote className="mt-6 space-y-5">
+      <blockquote className="space-y-5">
         <div className="text-center">
           <h3 className="font-cinzel text-amber-800 text-lg font-bold tracking-wide mb-2">Sloka (Sanskrit)</h3>
           <p className="text-xl md:text-2xl text-stone-800 leading-relaxed whitespace-pre-wrap" lang="sa">

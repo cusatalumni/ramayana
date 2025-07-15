@@ -1,4 +1,3 @@
-
 // The core data returned from the first API call (text generation)
 export interface PostData {
   sanskrit_sloka: string;
@@ -12,4 +11,5 @@ export interface PostData {
 // The image can be temporarily null while it's being generated.
 export interface DisplayablePost extends PostData {
   imageUrl: string | null;
+  imageRequested: boolean;
 }

@@ -24,6 +24,14 @@
       .animate-fade-in {
         animation: fadeIn 0.5s ease-in-out forwards;
       }
+      /* Toggle Switch CSS */
+      .toggle-checkbox:checked {
+        transform: translateX(100%);
+        border-color: #f97316; /* Tailwind orange-500 */
+      }
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #fb923c; /* Tailwind orange-400 */
+      }
     </style>
   <script type="importmap">
 {

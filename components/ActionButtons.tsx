@@ -20,7 +20,6 @@ English Meaning:
 “${english_meaning}”
 
 — The Ramayana
-    
 ✨ To create this kind of Ramayana post with images visit www.annapoornainfo.com/ramayana now ✨
     `;
     try {
